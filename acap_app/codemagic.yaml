@@ -3,13 +3,14 @@ workflows:
     name: ACAP Android
     max_build_duration: 60
     environment:
-      flutter: 3.24.0
-      java: 17
+      flutter: stable
     scripts:
+      - name: Switch Flutter version
+        script: |
+          flutter version 3.22.0
       - name: Get packages
         script: flutter pub get
       - name: Build APK
-        script: |
-          flutter build apk --release --no-tree-shake-icons
+        script: flutter build apk --release
     artifacts:
-      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/flutter-apk/*.apk
