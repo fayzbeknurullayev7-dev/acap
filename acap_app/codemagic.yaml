@@ -4,11 +4,16 @@ workflows:
     instance_type: mac_mini_m2
     working_directory: acap_app
     environment:
-      flutter: 3.22.3
+      flutter: stable
     scripts:
+      - name: Downgrade Flutter
+        script: |
+          flutter downgrade 3.22.3 --no-prompt || true
+          cd /Users/builder/clone/flutter && git checkout 3.22.3
+          flutter --version
       - name: Get packages
         script: flutter pub get
       - name: Build APK
-        script: flutter build apk --debug --no-tree-shake-icons
+        script: flutter build apk --debug
     artifacts:
       - acap_app/build/app/outputs/flutter-apk/app-debug.apk
