@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -rin \"anthropic\" .)",
+      "Bash(python3 -m py_compile core/config.py services/llm_router.py tools/__init__.py agents/base_agent.py agents/coder_agent.py agents/debugger_agent.py routers/agent.py)",
+      "Bash(python3 -m py_compile core/config.py core/dependencies.py)",
+      "Bash(python3 -c \"import yaml,sys; yaml.safe_load\\(open\\('/root/my_project/docker-compose.yml'\\)\\); print\\('YAML VALID ✔'\\)\")",
+      "Bash(pip install *)",
+      "Bash(python3 -c \"import yaml; d=yaml.safe_load\\(open\\('/root/my_project/docker-compose.yml'\\)\\); a=d['services']['agent-service']; print\\('YAML VALID ✔'\\); print\\('agent env JWT_SECRET_KEY:', 'JWT_SECRET_KEY' in a['environment']\\); print\\('agent volumes:', a.get\\('volumes'\\)\\); print\\('agent OLLAMA:', 'OLLAMA_BASE_URL' in a['environment']\\)\")",
+      "Bash(grep -rnE '^\\\\s+\\(String|int|bool|DateTime|List|Map\\)\\\\s+\\\\w+,$' lib/features/projects lib/features/dashboard lib/features/settings)",
+      "Bash(sed -n '15,26p' lib/features/agent/presentation/screens/agent_screen.dart)",
+      "Bash(flutter --version)",
+      "Bash(dart --version)",
+      "Bash(mkdir -p assets/images assets/animations assets/fonts)",
+      "Bash(touch assets/images/.gitkeep assets/animations/.gitkeep assets/fonts/.gitkeep)",
+      "Bash(python3 -m py_compile acap_backend/services/projects/*.py acap_backend/services/projects/core/*.py acap_backend/services/projects/models/*.py acap_backend/services/projects/schemas/*.py acap_backend/services/projects/routers/*.py acap_backend/services/projects/services/*.py acap_backend/services/files/*.py acap_backend/services/files/core/*.py acap_backend/services/files/schemas/*.py acap_backend/services/files/routers/*.py acap_backend/services/files/services/*.py)"
+    ]
+  }
+}

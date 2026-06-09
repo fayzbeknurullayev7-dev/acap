@@ -1,0 +1,141 @@
+version: '3.9'
+
+services:
+
+  # ── Infrastructure ─────────────────────────────────────────────────────
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER:     acap
+      POSTGRES_PASSWORD: acap_secret
+      POSTGRES_DB:       acap_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acap"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ── Backend Services ───────────────────────────────────────────────────
+
+  auth-service:
+    build:
+      context: ./acap_backend/services/auth
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL:    postgresql+asyncpg://acap:acap_secret@postgres:5432/acap_db
+      REDIS_URL:       redis://redis:6379/0
+      JWT_SECRET_KEY:  ${JWT_SECRET_KEY:-dev-secret-change-me}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      MAIL_USERNAME:   ${MAIL_USERNAME:-}
+      MAIL_PASSWORD:   ${MAIL_PASSWORD:-}
+      DEBUG:           "true"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  agent-service:
+    build:
+      context: ./acap_backend/services/agent
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL:    postgresql+asyncpg://acap:acap_secret@postgres:5432/acap_db
+      REDIS_URL:       redis://redis:6379/0
+      AUTH_SERVICE_URL: http://auth-service:8000
+      JWT_SECRET_KEY:  ${JWT_SECRET_KEY:-dev-secret-change-me}
+      GROQ_API_KEY:    ${GROQ_API_KEY:-}
+      GEMINI_API_KEY:  ${GEMINI_API_KEY:-}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-}
+      DEBUG:           "true"
+    ports:
+      - "8001:8001"
+    volumes:
+      - workspaces:/workspaces
+    depends_on:
+      - auth-service
+      - redis
+    restart: unless-stopped
+
+  terminal-service:
+    build:
+      context: ./acap_backend/services/terminal
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL:    postgresql+asyncpg://acap:acap_secret@postgres:5432/acap_db
+      REDIS_URL:       redis://redis:6379/1
+      AUTH_SERVICE_URL: http://auth-service:8000
+      JWT_SECRET_KEY:  ${JWT_SECRET_KEY:-dev-secret-change-me}
+      DEBUG:           "true"
+    ports:
+      - "8003:8003"
+    volumes:
+      - workspaces:/workspaces
+    depends_on:
+      - auth-service
+    restart: unless-stopped
+
+  projects-service:
+    build:
+      context: ./acap_backend/services/projects
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL:    postgresql+asyncpg://acap:acap_secret@postgres:5432/acap_db
+      REDIS_URL:       redis://redis:6379/0
+      JWT_SECRET_KEY:  ${JWT_SECRET_KEY:-dev-secret-change-me}
+      DEBUG:           "true"
+    ports:
+      - "8002:8002"
+    volumes:
+      - workspaces:/workspaces
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    restart: unless-stopped
+
+  files-service:
+    build:
+      context: ./acap_backend/services/files
+      dockerfile: Dockerfile
+    environment:
+      JWT_SECRET_KEY:  ${JWT_SECRET_KEY:-dev-secret-change-me}
+      GROQ_API_KEY:    ${GROQ_API_KEY:-}
+      DEBUG:           "true"
+    ports:
+      - "8004:8004"
+    volumes:
+      - workspaces:/workspaces
+    depends_on:
+      - auth-service
+      - projects-service
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  workspaces:

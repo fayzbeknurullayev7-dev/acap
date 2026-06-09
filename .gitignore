@@ -1,0 +1,15 @@
+# ── Python ──────────────────────────────────────────────
+**/__pycache__/
+**/*.pyc
+.env
+
+# ── Flutter ─────────────────────────────────────────────
+acap_app/build/
+acap_app/.dart_tool/
+acap_app/*.g.dart
+acap_app/*.freezed.dart
+acap_app/android/google-services.json
+
+# ── IDE / OS ────────────────────────────────────────────
+.idea/
+.DS_Store
