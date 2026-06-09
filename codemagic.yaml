@@ -11,6 +11,6 @@ workflows:
       - name: Get packages
         script: flutter pub get
       - name: Build APK
-        script: flutter build apk --debug --no-tree-shake-icons
+        script: flutter build apk --debug --no-tree-shake-icons --verbose 2>&1 | tail -100
     artifacts:
       - acap_app/build/app/outputs/flutter-apk/app-debug.apk
