@@ -4,11 +4,15 @@ workflows:
     instance_type: mac_mini_m2
     working_directory: acap_app
     environment:
-      flutter: 3.22.3
+      flutter: stable
     scripts:
       - name: Get packages
         script: flutter pub get
       - name: Build APK
-        script: flutter build apk --debug
+        script: |
+          export FLUTTER_SUPPRESS_ANALYTICS=true
+          sed -i 's/checkForDeprecation/\/\/checkForDeprecation/g' \
+            $(flutter --version --machine 2>/dev/null; find / -name "project.dart" -path "*/flutter_tools/*" 2>/dev/null | head -1) || true
+          flutter build apk --debug --no-tree-shake-icons
     artifacts:
       - acap_app/build/app/outputs/flutter-apk/app-debug.apk
