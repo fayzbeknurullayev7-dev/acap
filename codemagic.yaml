@@ -8,9 +8,13 @@ workflows:
     scripts:
       - name: Patch v1 embedding check
         script: |
-          PROJECT_DART=$(find /Users/builder/programs/flutter -name "project.dart" -path "*/flutter_tools/*" 2>/dev/null | head -1)
-          if [ -n "$PROJECT_DART" ]; then
-            sed -i 's/throwToolExit.*v1 embedding.*$/\/\/ v1 check disabled/' "$PROJECT_DART" || true
+          PROJECT_DART="/Users/builder/programs/flutter/packages/flutter_tools/lib/src/project.dart"
+          if [ -f "$PROJECT_DART" ]; then
+            sed -i '/Build failed due to use of deleted Android v1 embedding/d' "$PROJECT_DART"
+            sed -i '/throwToolExit.*v1 embedding/d' "$PROJECT_DART"
+            echo "Patched successfully"
+          else
+            echo "File not found: $PROJECT_DART"
           fi
       - name: Get packages
         script: flutter pub get
