@@ -12,6 +12,7 @@ workflows:
           git fetch --tags
           git checkout 3.22.3
           flutter --version
+          flutter pub cache repair || true
       - name: Get packages
         script: flutter pub get
       - name: Build APK
