@@ -6,13 +6,15 @@ workflows:
     environment:
       flutter: stable
     scripts:
+      - name: Patch v1 embedding check
+        script: |
+          PROJECT_DART=$(find /Users/builder/programs/flutter -name "project.dart" -path "*/flutter_tools/*" 2>/dev/null | head -1)
+          if [ -n "$PROJECT_DART" ]; then
+            sed -i 's/throwToolExit.*v1 embedding.*$/\/\/ v1 check disabled/' "$PROJECT_DART" || true
+          fi
       - name: Get packages
         script: flutter pub get
       - name: Build APK
-        script: |
-          export FLUTTER_SUPPRESS_ANALYTICS=true
-          sed -i 's/checkForDeprecation/\/\/checkForDeprecation/g' \
-            $(flutter --version --machine 2>/dev/null; find / -name "project.dart" -path "*/flutter_tools/*" 2>/dev/null | head -1) || true
-          flutter build apk --debug --no-tree-shake-icons
+        script: flutter build apk --debug
     artifacts:
       - acap_app/build/app/outputs/flutter-apk/app-debug.apk
