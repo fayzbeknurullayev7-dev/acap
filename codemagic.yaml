@@ -15,6 +15,9 @@ workflows:
       - name: Get packages
         script: /Users/builder/programs/flutter/bin/flutter pub get
       - name: Build APK
-        script: /Users/builder/programs/flutter/bin/flutter build apk --debug
+        script: |
+          echo "flutter.sdk=/Users/builder/programs/flutter" > android/local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
+          /Users/builder/programs/flutter/bin/flutter build apk --debug
     artifacts:
       - acap_app/build/app/outputs/flutter-apk/app-debug.apk
