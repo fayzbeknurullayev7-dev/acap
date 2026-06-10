@@ -21,6 +21,6 @@ workflows:
           export PATH="/Users/builder/programs/flutter/bin:$PATH"
           echo "flutter.sdk=/Users/builder/programs/flutter" > android/local.properties
           echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
-          cd android && chmod +x gradlew && ./gradlew assembleDebug 2>&1 | head -80
+          cd android && chmod +x gradlew && ./gradlew assembleDebug 2>&1 | grep -A5 "FAILURE\|What went wrong\|error:"
     artifacts:
       - acap_app/build/app/outputs/apk/debug/app-debug.apk
