@@ -11,11 +11,10 @@ workflows:
           cd /Users/builder/programs/flutter
           git fetch --tags
           git checkout 3.22.3
-          flutter --version
           flutter pub cache repair || true
       - name: Get packages
-        script: flutter pub get
+        script: /Users/builder/programs/flutter/bin/flutter pub get
       - name: Build APK
-        script: flutter build apk --debug
+        script: /Users/builder/programs/flutter/bin/flutter build apk --debug
     artifacts:
       - acap_app/build/app/outputs/flutter-apk/app-debug.apk
