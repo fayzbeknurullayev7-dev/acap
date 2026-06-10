@@ -6,15 +6,20 @@ workflows:
     environment:
       flutter: stable
     scripts:
-      - name: Patch v1 embedding check
+      - name: Switch Flutter version
         script: |
-          PROJECT_DART=$(find /Users/builder/programs/flutter -name "project.dart" -path "*/flutter_tools/*" 2>/dev/null | head -1)
-          if [ -n "$PROJECT_DART" ]; then
-            sed -i 's/throwToolExit.*v1 embedding.*$/\/\/ v1 check disabled/' "$PROJECT_DART" || true
-          fi
+          cd /Users/builder/programs/flutter
+          git fetch --tags
+          git checkout 3.22.3
+          rm -f bin/cache/flutter_tools.snapshot
+          rm -f bin/cache/flutter_tools.stamp
+          flutter --version
       - name: Get packages
-        script: flutter pub get
+        script: /Users/builder/programs/flutter/bin/flutter pub get
       - name: Build APK
-        script: flutter build apk --debug
+        script: |
+          echo "flutter.sdk=/Users/builder/programs/flutter" > android/local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
+          /Users/builder/programs/flutter/bin/flutter build apk --debug
     artifacts:
       - acap_app/build/app/outputs/flutter-apk/app-debug.apk
