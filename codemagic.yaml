@@ -11,7 +11,9 @@ workflows:
           cd /Users/builder/programs/flutter
           git fetch --tags
           git checkout 3.22.3
-          flutter pub cache repair || true
+          rm -f bin/cache/flutter_tools.snapshot
+          rm -f bin/cache/flutter_tools.stamp
+          flutter --version
       - name: Get packages
         script: /Users/builder/programs/flutter/bin/flutter pub get
       - name: Build APK
