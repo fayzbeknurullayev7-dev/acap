@@ -1,0 +1,45 @@
+name: ACAP Flutter APK Build
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodni olish
+        uses: actions/checkout@v4
+
+      - name: Java 17 o'rnatish
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Flutter o'rnatish
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      - name: Dependencies olish
+        working-directory: acap_app
+        run: flutter pub get
+
+      - name: Kod generatsiya
+        working-directory: acap_app
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: APK Build
+        working-directory: acap_app
+        run: flutter build apk --release
+
+      - name: APK saqlash
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACAP-release-apk
+          path: acap_app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
