@@ -30,6 +30,9 @@ jobs:
             sed -i "s/def manifest = new XmlParser().parse/def manifest = new groovy.xml.XmlParser().parse/" "$GROOVY_FILE" || true
             sed -i "s/entry.key instanceof groovy.xml.QName/entry.key instanceof String/" "$GROOVY_FILE" || true
           sed -i "s/entry.key instanceof QName/entry.key instanceof String/" "$GROOVY_FILE" || true
+          # Fix exec() for Gradle 9
+          sed -i "s/project.exec {/providers.exec {/g" "$GROOVY_FILE" || true
+          sed -i "s/project.exec(/providers.exec(/g" "$GROOVY_FILE" || true
           fi
 
       - name: local.properties
