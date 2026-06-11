@@ -35,11 +35,13 @@ jobs:
 
       - name: APK
         working-directory: acap_app
-        run: flutter build apk --release
+        run: |
+          cd android
+          ./gradlew assembleRelease --stacktrace 2>&1 | tail -50
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ACAP-release-apk
-          path: acap_app/build/app/outputs/flutter-apk/app-release.apk
+          path: acap_app/build/app/outputs/apk/release/app-release.apk
           if-no-files-found: warn
