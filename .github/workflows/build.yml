@@ -35,13 +35,11 @@ jobs:
 
       - name: APK
         working-directory: acap_app
-        run: |
-          flutter config --no-analytics
-          flutter doctor -v
-          flutter build apk --release --verbose 2>&1 | tail -100
+        run: flutter build apk --release
 
       - uses: actions/upload-artifact@v4
-        if: success()
+        if: always()
         with:
           name: ACAP-release-apk
           path: acap_app/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: warn
