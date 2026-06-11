@@ -31,17 +31,12 @@ android {
         release {
             signingConfig signingConfigs.debug
             minifyEnabled false
+            shrinkResources false
         }
-    }
-
-    lintOptions {
-        disable 'MissingDimensionActivityCreator'
     }
 }
 
 dependencies {
     implementation "androidx.appcompat:appcompat:1.7.0"
-    implementation "androidx.lifecycle:lifecycle-runtime:2.7.0"
     implementation "androidx.multidex:multidex:2.0.1"
-    implementation "androidx.core:core:1.13.1"
 }
