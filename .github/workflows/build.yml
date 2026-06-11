@@ -34,15 +34,11 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: APK
-        working-directory: acap_app/android
-        run: ./gradlew assembleRelease
-
-      - name: Find APK
-        run: find . -name "*.apk" 2>/dev/null
+        working-directory: acap_app
+        run: flutter build apk --release
 
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: ACAP-release-apk
-          path: "**/*.apk"
-          if-no-files-found: warn
+          path: acap_app/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
